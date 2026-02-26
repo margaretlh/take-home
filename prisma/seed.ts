@@ -21,6 +21,7 @@ async function main() {
   const patientUser = await prisma.user.create({
     data: {
       email: "patient@demo.com",
+      password: "patient1234",
       name: "Demo Patient",
       role: "PATIENT",
       organization: "Trial Participant",
@@ -30,6 +31,7 @@ async function main() {
   const reviewerUser = await prisma.user.create({
     data: {
       email: "reviewer@demo.com",
+      password: "reviewer1234",
       name: "Dr. Sarah Chen",
       role: "REVIEWER",
       organization: "PharmaCorp Trial Coordinator",
