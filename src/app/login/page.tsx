@@ -30,6 +30,22 @@ export default function LoginPage() {
             }
 
             const user = await response.json();
+
+            // Check role matches selected tab
+            if (role === "client" && user.role !== "PATIENT") {
+            setError("This account is not a patient account. Please use the Reviewer tab.");
+            setIsLoading(false);
+            return;
+            }
+
+            if (role === "reviewer" && user.role !== "REVIEWER") {
+            setError("This account is not a reviewer account. Please use the Client tab.");
+            setIsLoading(false);
+            return;
+            }
+
+            // Redirect based on role
+            router.push(user.role === "PATIENT" ? "/intake" : "/queue");
             router.push(user.role === "PATIENT" ? "/intake" : "/queue");
         } catch (error) {
             setError(error instanceof Error ? error.message : "An error occurred");
@@ -57,7 +73,10 @@ export default function LoginPage() {
                 <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
                     <button
                         type="button"
-                        onClick={() => setRole("client")}
+                        onClick={() =>  {
+                            setRole("client");
+                            setEmail("patient@demo.com");
+                        }}
                         className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                             role === "client"
                                 ? "bg-white text-gray-900 shadow-sm"
@@ -71,7 +90,10 @@ export default function LoginPage() {
                     </button>
                     <button
                         type="button"
-                        onClick={() => setRole("reviewer")}
+                        onClick={() => {
+                            setRole("reviewer")
+                            setEmail("reviewer@demo.com");
+                        }}
                         className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                             role === "reviewer"
                                 ? "bg-white text-gray-900 shadow-sm"
