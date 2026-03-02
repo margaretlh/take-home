@@ -27,10 +27,53 @@ export default function IntakePage() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const validate = () => {
+    const errors: string[] = [];
+
+    // Name validation
+    if (!/^[a-zA-Z\s'-]+$/.test(form.clientName.trim())) {
+      errors.push("Name can only contain letters, spaces, hyphens, and apostrophes");
+    } else if (form.clientName.trim().length < 2) {
+      errors.push("Please enter a valid full name");
+    }
+
+    // Phone validation
+    const rawPhone = form.clientPhone.replace(/[-\s]/g, "");
+    if (!/^\d{10}$/.test(rawPhone)) {
+      errors.push("Phone number must be 10 digits e.g. 555-555-5555 or 5555555555");
+    }
+
+    // SSN validation
+    const rawSSN = form.ssn.replace(/[-\s]/g, "");
+    if (!/^\d{9}$/.test(rawSSN)) {
+      errors.push("SSN must be 9 digits e.g. XXX-XX-XXXX or XXXXXXXXX");
+    }
+      
+    // Include all errors
+    if (errors.length > 0) {
+      setError(errors.join("\n"));
+      return null;
+    }
+
+    // Return formatted values before submitting
+    return {
+      ...form,
+      clientName: form.clientName.trim(),
+      clientPhone: `${rawPhone.slice(0,3)}-${rawPhone.slice(3,6)}-${rawPhone.slice(6)}`,
+      ssn: `${rawSSN.slice(0,3)}-${rawSSN.slice(3,5)}-${rawSSN.slice(5)}`,
+    };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    const formattedForm = validate();
+    if (!formattedForm) {
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch("/api/intakes", {
@@ -200,7 +243,13 @@ export default function IntakePage() {
             />
           </div>
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && (
+            <div className="text-sm text-red-500 space-y-1">
+              {error.split("\n").map((e, i) => (
+                <p key={i}>• {e}</p>
+              ))}
+            </div>
+          )}
 
           <button
             type="submit"

@@ -36,7 +36,6 @@ export async function GET(request: Request, { params }: RouteParams) {
   if (user.role === "PATIENT" && intake.submittedById !== user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-  
   return NextResponse.json(intake);
 
 }
@@ -44,7 +43,7 @@ export async function GET(request: Request, { params }: RouteParams) {
 // Update intake
 export async function PATCH(request: Request, { params }: RouteParams) {
   const { id } = await params;
-   const user = await getCurrentUser();
+  const user = await getCurrentUser();
 
   const body = await request.json();
   const { status, reviewerId, notes, userId } = body;
@@ -61,25 +60,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   if (user.role !== "REVIEWER") {
     return NextResponse.json({ error: "Only reviewers can update status" }, { status: 403 });
   }
-  
-  // const updateData: {
-  //   status?: string;
-  //   reviewerId?: string;
-  //   notes?: string;
-  // } = {};
-
-  // if (status)
-  //   updateData.status = status;
-  // if (reviewerId)
-  //   updateData.reviewerId = reviewerId;
-  // if (notes !== undefined)
-  //   updateData.notes = notes;
-
-  // const updated = await prisma.intake.update({
-  //   where: { id },
-  //   data: updateData,
-  // });
-
 
   const updated = await prisma.intake.update({
     where: { id },
@@ -114,10 +94,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         details: JSON.stringify(auditDetails),
       },
     });
-  }
-  
-  // return PATCH /api/intakes/${id} endpoint
-  // return NextResponse.json(updated);
+  }  
   return NextResponse.json(updated, { status: 200 });
-  // return NextResponse.json({ message: `TODO: Implement PATCH /api/intakes/${id}` }, { status: 501 });
 }
