@@ -48,7 +48,7 @@ export default function IntakePage() {
     if (!/^\d{9}$/.test(rawSSN)) {
       errors.push("SSN must be 9 digits e.g. XXX-XX-XXXX or XXXXXXXXX");
     }
-      
+
     // Include all errors
     if (errors.length > 0) {
       setError(errors.join("\n"));
@@ -102,10 +102,20 @@ export default function IntakePage() {
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-12">
         <div className="w-full max-w-lg bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
           <div className="text-green-500 text-5xl mb-4">✓</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Application Submitted</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Intake Submitted Successfully</h2>
           <p className="text-gray-400 text-sm mb-6">
-            Your enrollment application has been received and is pending review.
+            Your intake has been received and is now pending review. You will be notified once a
+            reviewer processes your submission.
           </p>
+
+          {/* Reference number */}
+        <div className="bg-gray-50 rounded-xl px-6 py-4 mb-8 inline-block w-full">
+          <p className="text-xs text-gray-400 mb-1">Reference Number</p>
+          <p className="text-lg font-mono font-semibold text-gray-900">
+            INT-{intakeId.slice(-3).toUpperCase()}
+          </p>
+        </div>
+        
           <DocumentUpload intakeId={intakeId} />
           <button
             onClick={() => router.push("/")}
@@ -120,129 +130,135 @@ export default function IntakePage() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-12">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Enrollment Application</h1>
-        <p className="text-gray-400">Submit your clinical trial enrollment application</p>
-        <SignOutButton />
-      </div>
+    <div className="min-h-screen bg-gray-50 px-4 py-8">
+      {/* Back to Login */}
+      <button
+        onClick={() => router.push("/login")}
+        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 mb-6 transition-colors"
+      >
+        ← Back to Login
+      </button>
 
-      <div className="w-full max-w-lg bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
-        <form onSubmit={handleSubmit} className="space-y-4">
-
-          {/* Personal Information */}
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-            Personal Information
-          </h3>
-
+      <div className="max-w-2xl mx-auto bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+        {/* Title */}
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">Submit New Intake</h1>
+        <p className="text-sm text-gray-500 mb-6">
+          Please provide your personal information below. All fields marked with * are required.
+          Your information is encrypted and securely stored.
+        </p>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Full Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
+              Full Name *
             </label>
             <input
               name="clientName"
               type="text"
               value={form.clientName}
               onChange={handleChange}
-              placeholder="Jane Smith"
+              placeholder="John Smith"
               required
               className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
             />
           </div>
 
+          {/* Email + Phone side by side */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Email Address *
+              </label>
+              <input
+                name="clientEmail"
+                type="email"
+                value={form.clientEmail}
+                onChange={handleChange}
+                placeholder="john@example.com"
+                required
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Phone Number *
+              </label>
+              <input
+                name="clientPhone"
+                type="tel"
+                value={form.clientPhone}
+                onChange={handleChange}
+                placeholder="(555) 123-4567"
+                required
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              />
+            </div>
+          </div>
+
+          {/* SSN + DOB side by side */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Social Security Number *
+              </label>
+              <input
+                name="ssn"
+                type="text"
+                value={form.ssn}
+                onChange={handleChange}
+                placeholder="123-45-6789"
+                required
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              />
+              <p className="text-xs text-gray-400 mt-1">Format: XXX-XX-XXXX</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date of Birth *
+              </label>
+              <input
+                name="dateOfBirth"
+                type="date"
+                value={form.dateOfBirth}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              />
+            </div>
+          </div>
+
+          {/* Full Address */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+              Full Address *
             </label>
             <input
-              name="clientEmail"
-              type="email"
-              value={form.clientEmail}
-              onChange={handleChange}
-              placeholder="jane@example.com"
-              required
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Phone Number
-            </label>
-            <input
-              name="clientPhone"
-              type="tel"
-              value={form.clientPhone}
-              onChange={handleChange}
-              placeholder="555-555-5555"
-              required
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date of Birth
-            </label>
-            <input
-              name="dateOfBirth"
-              type="date"
-              value={form.dateOfBirth}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Social Security Number
-            </label>
-            <input
-              name="ssn"
-              type="password"
-              value={form.ssn}
-              onChange={handleChange}
-              placeholder="XXX-XX-XXXX"
-              required
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
-            />
-          </div>
-
-          {/* Application Details */}
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide pt-2">
-            Application Details
-          </h3>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Reason for Enrollment
-            </label>
-            <textarea
               name="description"
+              type="text"
               value={form.description}
               onChange={handleChange}
-              placeholder="Describe your medical history and reason for applying..."
+              placeholder="123 Main St, City, State 12345"
               required
-              rows={4}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 resize-none"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
             />
           </div>
 
+          {/* Additional Notes */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Additional Notes <span className="text-gray-400">(optional)</span>
+              Additional Notes
             </label>
             <textarea
               name="notes"
               value={form.notes}
               onChange={handleChange}
-              placeholder="Any additional information..."
-              rows={2}
+              placeholder="Any additional information you'd like to provide..."
+              rows={4}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 resize-none"
             />
           </div>
 
+          {/* Errors */}
           {error && (
             <div className="text-sm text-red-500 space-y-1">
               {error.split("\n").map((e, i) => (
@@ -251,13 +267,30 @@ export default function IntakePage() {
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gray-900 text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
-          >
-            {loading ? "Submitting..." : "Submit Application"}
-          </button>
+          {/* Consent */}
+          <div className="border border-gray-200 rounded-lg p-4 text-sm text-gray-500">
+            By submitting this form, you consent to the collection and processing of your personal
+            information in accordance with our privacy policy. Your data will be reviewed by authorized
+            personnel only.
+          </div>
+
+          {/* Buttons */}
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => router.push("/")}
+              className="px-6 py-2.5 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Submitting..." : "Submit Intake"}
+            </button>
+          </div>
         </form>
       </div>
     </div>
