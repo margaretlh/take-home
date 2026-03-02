@@ -1,17 +1,28 @@
 import { cookies } from "next/headers";
+import { SignJWT, jwtVerify } from "jose";
+
+const secret= new TextEncoder().encode(
+    process.env.JWT_SECRET || "fallback-secret-change-in-production"
+);
+
+export async function createSessionToken(user: object) {
+    return new SignJWT({ user })
+        .setProtectedHeader({ alg: "HS256" })
+        .setExpirationTime("24h")
+        .sign(secret);
+}
 
 export async function getCurrentUser() {
     const cookieStore = await cookies();
-    const userCookie = cookieStore.get("user");
-    // return user ? JSON.parse(user.value) : null;
+    const token = cookieStore.get("session")?.value;
 
-    if (!userCookie) return null;
+    if (!token)
+        return null;
 
     try {
-        const user = JSON.parse(userCookie.value);
-        return user;
-    } catch (error) {
-        console.error("Error parsing user cookie:", error);
+        const { payload } = await jwtVerify(token, secret);
+        return payload.user as any;
+    } catch {
         return null;
     }
 }

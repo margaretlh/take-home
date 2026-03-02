@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { createSessionToken } from "@/lib/auth";
 
 export async function POST(request: Request) {
   const { email, password } = await request.json();
@@ -21,8 +22,10 @@ export async function POST(request: Request) {
 
   const { password: _, ...safeUser } = user;
 
+  const token = await createSessionToken(safeUser);
+
   const response = NextResponse.json(safeUser);
-  response.cookies.set("user", JSON.stringify(safeUser), {
+  response.cookies.set("session", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 60 * 60 * 24, // 24 hours
@@ -33,6 +36,6 @@ export async function POST(request: Request) {
 
 export async function DELETE() {
   const response = NextResponse.json({ message: "Logged out" });
-  response.cookies.delete("user");
+  response.cookies.delete("session");
   return response;
 }
