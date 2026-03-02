@@ -15,6 +15,17 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  // For patients, verify they own this intake
+  if (user.role === "PATIENT") {
+    const intake = await prisma.intake.findUnique({
+      where: { id },
+      select: { submittedById: true },
+    });
+
+    if (!intake || intake.submittedById !== user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+  }
 
   const formData = await request.formData();
   const file = formData.get("file") as File;
@@ -65,6 +76,17 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  // For patients, verify they own this intake
+  if (user.role === "PATIENT") {
+    const intake = await prisma.intake.findUnique({
+      where: { id },
+      select: { submittedById: true },
+    });
+
+    if (!intake || intake.submittedById !== user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
   }
 
   const documents = await prisma.document.findMany({

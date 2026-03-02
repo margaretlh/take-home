@@ -9,6 +9,11 @@ interface RouteParams {
 // fetch single intake GET /api/intakes/${id}
 export async function GET(request: Request, { params }: RouteParams) {
   const { id } = await params;
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
 
   const intake = await prisma.intake.findUnique({
     where: { id },
@@ -27,8 +32,12 @@ export async function GET(request: Request, { params }: RouteParams) {
     return NextResponse.json({error: "Intake not found" }, { status: 404 });
   }
   
+  // Patients can only view their own intakes
+  if (user.role === "PATIENT" && intake.submittedById !== user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  
   return NextResponse.json(intake);
-  // return NextResponse.json(intake, { status: 200 });
 
 }
 
