@@ -178,3 +178,49 @@ A: Yes, but keep in mind the time constraint. The existing setup should be suffi
 A: For simplicity, you can use a basic approach (e.g., credentials). Full authentication is a bonus.
 
 We wish you the best of luck and look forward to reviewing your solution!
+
+
+## Submission Notes
+
+**Time spent:** ~4 hours
+
+**Loom Recording:** https://www.loom.com/share/42797691a1f14f3a82990a900a108866
+
+### What I prioritized and why
+- **User Authentication and Authorization** — I prioritized user login (authentication) by using signed JWT session cookies and implemented role-based access (authorization) to ensure patients and reviewers can only view what they are permitted to (patients can see the intake form and only reviewers can access the review queue).
+
+- **Core functionality** — I built the intake form and documentation upload first to enable end-to-end testing with the review queue afterward. I also added the PII toggle, status updates, and audit trail before making intricate UI updates. I implemented the audit trail last since it depended on the other pieces existing first. I also enforced correct role-based permissions on the redacted/privileged toggle to ensure only reviewers can access the privileged view and defaulted to using the redacted view to protect patient security.
+
+- **Input validation** — I added client-side validation for phone, 
+  SSN, name, and date of birth to prevent typos and invalid data submissions.
+
+- **UI design with Tailwind** — Once core features were working properly, 
+  I styled the UI using Tailwind utility classes to build a clean and consistent UI without having to write custom CSS.
+
+
+### What I would improve with more time
+
+- **Make UI/UX improvements:** - improve sign out button page placement and add a homepage navigation button across all pages
+
+- **Implement Password Hashing** — - passwords are stored as plain text for demo purposes, but later I would use bcrypt in production to hash and salt passwords in order to prevent data breach
+
+- **Add Testing Suite** — I'd add unit and integration tests to cover authentication, PII masking, and role-based access 
+
+- **Improve security for uploading documents** - serve uploaded documents through an authenticated API route
+
+- **Add Swagger/OpenAPI documentation** — document all API endpoints 
+  for easier integration by other developers
+
+- **Enable Email Notifications** — notify patients when their application 
+  status changes
+
+- **Filter by date range** — add abilityn to filter enrollment applications in review queue by date range 
+
+- **Replace Database** —  I would switch to using PostgreSQL over SQLite because it provides proper authentication and encrypted connections, and is better for handling sensitive data like patient SSNs.
+
+
+### Demo Credentials
+| Email | Password | Role |
+| --- | --- | --- |
+| `patient@demo.com` | `patient1234` | PATIENT |
+| `reviewer@demo.com` | `reviewer1234` | REVIEWER |

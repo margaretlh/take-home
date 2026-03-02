@@ -46,7 +46,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   const user = await getCurrentUser();
 
   const body = await request.json();
-  const { status, reviewerId, notes, userId } = body;
+  const { status, reviewerId, notes } = body;
 
   const intake = await prisma.intake.findUnique({ where: { id } });
   if (!intake) {
@@ -85,10 +85,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     auditDetails.notes = notes;
 
   // Audit log
-  if (userId) {
+  if (user) {
     await prisma.auditLog.create({
       data: {
-        userId,
+        userId: user.id,
         intakeId: id,
         action: status ? "STATUS_CHANGED" : "UPDATED",
         details: JSON.stringify(auditDetails),
